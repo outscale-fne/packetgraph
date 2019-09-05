@@ -20,7 +20,7 @@ fi
 ./tests/core/test.sh
 ./tests/diode/test.sh
 ./tests/firewall/test.sh
-./tests/nic/test.sh
+#./tests/nic/test.sh
 ./tests/print/test.sh
 ./tests/queue/test.sh
 ./tests/switch/test.sh
