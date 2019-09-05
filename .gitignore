@@ -38,3 +38,8 @@ html
 !*.h
 example-*
 dpdk_symbols_autogen.h
+tests/**/*.gcda
+tests/**/*.gcno
+src/**/*.gcda
+src/**/*.gcno
+
