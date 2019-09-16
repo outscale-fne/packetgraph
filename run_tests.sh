@@ -17,7 +17,9 @@ if [ "$(whoami)" == "travis" ]; then
 fi
 
 ./tests/antispoof/test.sh
+./tests/lifecycle/test.sh
 ./tests/core/test.sh
+./tests/lifecycle/test.sh
 ./tests/diode/test.sh
 ./tests/firewall/test.sh
 #./tests/nic/test.sh

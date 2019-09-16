@@ -6,6 +6,11 @@ tests_antispoof_SOURCES = \
 	$(tests_antispoof_DIR)/tests.c
 tests_antispoof_OBJECTS = $(tests_antispoof_SOURCES:.c=.o)
 
+tests_lifecycle_DIR = tests/lifecycle
+tests_lifecycle_SOURCES = \
+	$(tests_lifecycle_DIR)/tests.c
+tests_lifecycle_OBJECTS = $(tests_lifecycle_SOURCES:.c=.o)
+
 tests_core_DIR = tests/core
 tests_core_SOURCES = \
 	$(tests_core_DIR)/test-bitmask.c\
@@ -78,7 +83,7 @@ tests_vtep_OBJECTS = $(tests_vtep_SOURCES:.c=.o)
 
 tests_tap_DIR = tests/tap
 tests_tap_SOURCES = \
-	$(tests_tap_DIR)/tests.c
+		    $(tests_tap_DIR)/tests.c
 tests_tap_OBJECTS = $(tests_tap_SOURCES:.c=.o)
 
 tests_thread_DIR = tests/thread
@@ -113,22 +118,29 @@ TESTS = \
 	tests/tap/test.sh\
 	tests/thread/test.sh\
 	tests/integration/test.sh\
-	tests/vhost/test.sh
+	tests/vhost/test.sh\
+	tests/lifecycle/test.sh
 
 ################################################################################
 ##                           Tests compilation rules                          ##
 ################################################################################
 
-test: dev tests-all-build antispoof core diode rxtx pmtud ip-fragment firewall nic print queue switch vtep tap thread integration vhost
+test: dev tests-all-build antispoof lifecycle core diode rxtx pmtud ip-fragment firewall nic print queue switch vtep tap thread integration vhost
 	@echo "tests ended"
 
-tests_compile: dev tests-antispoof tests-core tests-diode tests-rxtx tests-pmtud tests-ip-fragment tests-integration tests-nic tests-print tests-queue tests-switch tests-vhost tests-vtep tests-tap tests-thread tests-firewall
+tests_compile: dev tests-antispoof tests-lifecycle tests-core tests-diode tests-rxtx tests-pmtud tests-ip-fragment tests-integration tests-nic tests-print tests-queue tests-switch tests-vhost tests-vtep tests-tap tests-thread tests-firewall
 	@echo "Compilation done"
 
 tests-antispoof: dev $(tests_antispoof_OBJECTS)
 	$(CC) $(tests_CFLAGS) $(PG_ASAN_CFLAGS) $(tests_antispoof_OBJECTS) $(tests_LIBS) -o $@
 
 $(tests_antispoof_OBJECTS): %.o : %.c
+	$(CC) -c $(tests_CFLAGS) $(PG_ASAN_CFLAGS) $< -o $@
+
+tests-lifecycle: dev $(tests_lifecycle_OBJECTS)
+	$(CC) $(tests_CFLAGS) $(PG_ASAN_CFLAGS) $(tests_lifecycle_OBJECTS) $(tests_LIBS) -o $@
+
+$(tests_lifecycle_OBJECTS): %.o : %.c
 	$(CC) -c $(tests_CFLAGS) $(PG_ASAN_CFLAGS) $< -o $@
 
 tests-core: dev $(tests_core_OBJECTS)
@@ -222,7 +234,7 @@ $(tests_firewall_OBJECTS): %.o : %.c
 	$(CC) -c $(tests_firewall_CFLAGS) $(PG_ASAN_CFLAGS) $< -o $@
 
 
-tests-all-build: tests-antispoof tests-core tests-rxtx tests-pmtud tests-ip-fragment \
+tests-all-build: tests-antispoof tests-lifecycle tests-core tests-rxtx tests-pmtud tests-ip-fragment \
 	tests-firewall tests-nic tests-print tests-queue tests-switch tests-vtep \
 	tests-tap tests-thread tests-integration tests-vhost
 
@@ -232,6 +244,9 @@ tests-all-build: tests-antispoof tests-core tests-rxtx tests-pmtud tests-ip-frag
 
 antispoof : tests-antispoof
 	tests/antispoof/test.sh
+
+lifecycle : tests-lifecycle
+	tests/lifecycle/test.sh
 
 core : tests-core
 	tests/core/test.sh
@@ -279,7 +294,7 @@ vhost : tests-vhost
 	tests/vhost/test.sh
 
 testclean: testcleanobj
-	rm -fv tests-antispoof tests-core tests-diode tests-rxtx tests-pmtud tests-ip-fragment tests-firewall tests-nic tests-print tests-queue tests-switch tests-vtep tests-tap tests-thread tests-integration tests-vhost
+	rm -fv tests-antispoof tests-lifecycle tests-core tests-diode tests-rxtx tests-pmtud tests-ip-fragment tests-firewall tests-nic tests-print tests-queue tests-switch tests-vtep tests-tap tests-thread tests-integration tests-vhost
 
 testcleanobj:
-	rm -fv $(tests_antispoof_OBJECTS) $(tests_core_OBJECTS) $(tests_diode_OBJECTS) $(tests_rxtx_OBJECTS) $(tests_pmtud_OBJECTS) $(tests_ip-fragment_OBJECTS) $(tests_firewall_OBJECTS) $(tests_nic_OBJECTS) $(tests_print_OBJECTS) $(tests_queue_OBJECTS) $(tests_switch_OBJECTS) $(tests_vtep_OBJECTS) $(tests_tap_OBJECTS) $(tests_thread_OBJECTS) $(tests_integration_OBJECTS) $(tests_vhost_OBJECTS)
+	rm -fv $(tests_antispoof_OBJECTS) $(tests_lifecycle_OBJECTS) $(tests_core_OBJECTS) $(tests_diode_OBJECTS) $(tests_rxtx_OBJECTS) $(tests_pmtud_OBJECTS) $(tests_ip-fragment_OBJECTS) $(tests_firewall_OBJECTS) $(tests_nic_OBJECTS) $(tests_print_OBJECTS) $(tests_queue_OBJECTS) $(tests_switch_OBJECTS) $(tests_vtep_OBJECTS) $(tests_tap_OBJECTS) $(tests_thread_OBJECTS) $(tests_integration_OBJECTS) $(tests_vhost_OBJECTS)

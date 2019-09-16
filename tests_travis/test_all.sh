@@ -14,6 +14,7 @@ make tests_compile
 make bench_compile
 
 ./tests/antispoof/test.sh
+./tests/lifecycle/test.sh
 ./tests/core/test.sh
 ./tests/diode/test.sh
 ./tests/firewall/test.sh
