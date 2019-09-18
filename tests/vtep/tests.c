@@ -1184,6 +1184,24 @@ static void test_vtep_fragment_encap_decap(void)
 	pg_brick_destroy(ip_fragment);
 }
 
+/* To test vtep's reaction to error-case. */
+static void test_vtep_errors_cases(void)
+{
+	struct pg_error *error = NULL;
+	struct pg_brick *vtep;
+	struct ether_addr mac = {{0x52, 0x54, 0x00, 0x12, 0x34, 0x11} };
+	/* Here we check pg_vtep_new_by_string with an invalid @ip. */
+	vtep = pg_vtep_new_by_string("encapsulatron", 500,
+					PG_EAST_SIDE, "I'm not an IP", mac,
+					PG_VTEP_DST_PORT,
+					0, &error);
+	g_assert(!vtep);
+	/* Here we check pg_vtep_get_mac with a NULL vtep. */
+	struct ether_addr *mac_output = pg_vtep_get_mac(vtep);
+
+	g_assert(!mac_output);
+}
+
 #undef NB_PKTS
 
 int main(int argc, char **argv)
@@ -1214,6 +1232,8 @@ int main(int argc, char **argv)
 
 	pg_test_add_func("/vtep/fragmented/encap-decap",
 			test_vtep_fragment_encap_decap);
+
+	pg_test_add_func("/vtep/vtep_errors_cases", test_vtep_errors_cases);
 
 	r = g_test_run();
 
