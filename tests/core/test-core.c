@@ -25,6 +25,7 @@
 #include "packetgraph/queue.h"
 #include "utils/network.h"
 #include "utils/mac-table.h"
+#include <sys/time.h>
 
 static void test_brick_core_simple_lifecycle(void)
 {
@@ -913,6 +914,13 @@ static void test_big_endian(void)
 			g_assert(f(args) == eq_val);			\
 	} while (0)
 
+long getMicrotime(void);
+long getMicrotime(void){
+	struct timeval currentTime;
+	gettimeofday(&currentTime, NULL);
+	return currentTime.tv_sec * (int)1e6 + currentTime.tv_usec;
+}
+
 static void test_mac_table(void)
 {
 	struct pg_mac_table ma;
@@ -940,11 +948,17 @@ static void test_mac_table(void)
 	pg_mac_table_ptr_set(&ma, m, &val);
 	m.mac = 4;
 	pg_mac_table_ptr_set(&ma, m, &val);
+	long t1 = getMicrotime();
+	int count = 0;
 	PG_MAC_TABLE_FOREACH_PTR(&ma, k, uint32_t, val_check) {
 		g_assert(val_check && *val_check == 1337);
 		++i;
+		count++;
 		g_assert(i < 3);
 	}
+	long t2 = getMicrotime();
+	printf("============== dt = %ld  %d =====================\n", t2 - t1,
+			count);
 	g_assert(i == 2);
 	m.mac = 0;
 	pg_mac_table_ptr_unset(&ma, m);
